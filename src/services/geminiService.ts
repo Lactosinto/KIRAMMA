@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
@@ -21,7 +21,7 @@ export type AnalysisMode = 'translator' | 'auditor' | 'vision' | 'troubleshooter
 
 export async function generatePromptFromImage(base64Image: string, mimeType: string, additionalIdea?: string): Promise<PromptAnalysis> {
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-1.5-flash",
     contents: [
       {
         inlineData: {
@@ -109,7 +109,7 @@ Final output must be in JSON format exactly as specified in the schema.`
 
 export async function generatePersonalPromptFromImage(base64Image: string, mimeType: string, additionalIdea?: string): Promise<PromptAnalysis> {
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-1.5-flash",
     contents: [
       {
         inlineData: {
@@ -212,7 +212,7 @@ export async function getRealtimeAssistance(input: string): Promise<RealtimeAssi
   if (!input || input.length < 5) return { recommendations: [], warnings: [], typos: [], correctedInput: '' };
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-1.5-flash",
     contents: `As a Stable Diffusion prompt assistant, analyze this partial input: "${input}"
     
     1. Provide 3-4 relevant next-word or contextual completions (e.g., "standing on the" -> "beach", "rooftop").
@@ -221,7 +221,6 @@ export async function getRealtimeAssistance(input: string): Promise<RealtimeAssi
     
     Return JSON: { "recommendations": [], "warnings": [], "typos": [{ "original": "", "correction": "" }], "correctedInput": "" }`,
     config: {
-      thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -367,7 +366,7 @@ export async function analyzeAndOptimizePrompt(input: string, mode: AnalysisMode
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-1.5-flash",
     contents: systemPrompt,
     config: {
       responseMimeType: "application/json",
