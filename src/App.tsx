@@ -40,7 +40,6 @@ export default function App() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<PromptAnalysis | null>(null);
   const [realtimeAssistance, setRealtimeAssistance] = useState<RealtimeAssistance | null>(null);
-  const [isRealtimeLoading, setIsRealtimeLoading] = useState(false);
   const [strength, setStrength] = useState<StrengthResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'optimized' | 'translated'>('optimized');
@@ -65,8 +64,6 @@ export default function App() {
   };
 
   const handleAnalyze = async () => {
-    setIsRealtimeLoading(false);
-    
     if (isImageInput) {
       if (!selectedImage) return;
       setIsAnalyzing(true);
@@ -140,7 +137,6 @@ export default function App() {
     const isDuplicateInput = input === lastProcessedInput.current;
 
     if (isImageMode || isInputTooShort || isDuplicateInput) {
-      setIsRealtimeLoading(false);
       if (isImageMode || isInputTooShort) {
         setRealtimeAssistance(null);
       }
@@ -148,15 +144,12 @@ export default function App() {
     }
 
     const timer = setTimeout(async () => {
-      setIsRealtimeLoading(true);
       try {
         const result = await getRealtimeAssistance(input);
         setRealtimeAssistance(result);
         lastProcessedInput.current = input;
       } catch (error) {
         console.error("Realtime assistance failed:", error);
-      } finally {
-        setIsRealtimeLoading(false);
       }
     }, 300); // 300ms debounce for snappier feel
 
@@ -311,9 +304,6 @@ export default function App() {
                   </div>
                 )}
 
-                {isRealtimeLoading && (
-                  <div className="w-4 h-4 border-2 border-[#2A2A2A] border-t-[#FACC15] rounded-full animate-spin" />
-                )}
               </div>
 
               {mode === 'vision' || (mode === 'personal' && personalInputType === 'image') || (mode === 'auditor' && auditorInputType === 'image') ? (
@@ -358,12 +348,7 @@ export default function App() {
                     {/* Real-time Assistance Section (Moved from absolute overlay to prevent overlapping) */}
                     <div className="p-4 bg-[#0B0B0B]/40 border-b border-[#2A2A2A] min-h-[60px] flex flex-col justify-center">
                       <AnimatePresence mode="wait">
-                        {isRealtimeLoading ? (
-                          <div className="flex items-center justify-center h-full gap-3">
-                            <div className="w-3 h-3 border-2 border-[#2A2A2A] border-t-[#FACC15] rounded-full animate-spin" />
-                            <span className="text-[10px] font-mono text-[#404040] uppercase tracking-widest animate-pulse">Analyzing_Input...</span>
-                          </div>
-                        ) : realtimeAssistance ? (
+                        {realtimeAssistance ? (
                           <motion.div 
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
