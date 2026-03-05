@@ -219,13 +219,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] py-12 px-4 sm:px-8 font-sans selection:bg-[#FACC15] selection:text-black transition-colors duration-200">
+    <div className="min-h-screen bg-[#0B0B0B] pt-20 pb-12 sm:py-12 px-4 sm:px-8 font-sans selection:bg-[#FACC15] selection:text-black transition-colors duration-200">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* System Header / Navigation Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-[#141414] p-1.5 rounded-2xl border border-[#2A2A2A] sticky top-4 z-50 shadow-2xl backdrop-blur-md bg-opacity-90">
-          <div className="flex items-center gap-3 px-2">
-            <div className="flex items-center gap-2">
-              <span className="font-bold tracking-tight text-base text-white">KIRAMMA</span>
+        <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 bg-[#141414] p-1 sm:p-1.5 rounded-none sm:rounded-2xl border-b sm:border border-[#2A2A2A] fixed sm:sticky top-0 sm:top-4 left-0 right-0 sm:left-auto sm:right-auto z-50 shadow-2xl backdrop-blur-md bg-opacity-90">
+          <div className="flex items-center gap-2 sm:gap-3 px-1 sm:px-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-bold tracking-tight text-sm sm:text-base text-white">KIRAMMA</span>
             </div>
             <div className="h-4 w-px bg-[#2A2A2A] hidden md:block" />
             <div className="hidden md:flex items-center gap-2">
@@ -234,39 +234,39 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex gap-1 overflow-x-auto scrollbar-hide p-0.5 bg-[#0B0B0B] rounded-xl border border-[#2A2A2A]">
-            <button onClick={() => setMode('translator')} className={cn("pill-tab py-1 px-2.5", mode === 'translator' && "active")}>
-              <Languages size={13} /> 
+          <div className="flex gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide p-0.5 bg-[#0B0B0B] rounded-xl border border-[#2A2A2A]">
+            <button onClick={() => setMode('translator')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'translator' && "active")}>
+              <Languages size={12} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">TRANSLATOR</span>
             </button>
-            <button onClick={() => setMode('auditor')} className={cn("pill-tab py-1 px-2.5", mode === 'auditor' && "active")}>
-              <AlertCircle size={13} /> 
+            <button onClick={() => setMode('auditor')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'auditor' && "active")}>
+              <AlertCircle size={12} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">AUDITOR</span>
             </button>
-            <button onClick={() => setMode('vision')} className={cn("pill-tab py-1 px-2.5", mode === 'vision' && "active")}>
-              <ImageIcon size={13} /> 
+            <button onClick={() => setMode('vision')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'vision' && "active")}>
+              <ImageIcon size={12} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">VISION</span>
             </button>
-            <button onClick={() => setMode('troubleshooter')} className={cn("pill-tab py-1 px-2.5", mode === 'troubleshooter' && "active")}>
-              <MessageSquare size={13} /> 
+            <button onClick={() => setMode('troubleshooter')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'troubleshooter' && "active")}>
+              <MessageSquare size={12} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">CONSULT</span>
             </button>
-            <button onClick={() => setMode('personal')} className={cn("pill-tab py-1 px-2.5", mode === 'personal' && "active")}>
-              <LayoutGrid size={13} /> 
+            <button onClick={() => setMode('personal')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'personal' && "active")}>
+              <LayoutGrid size={12} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">PERSONAL</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-3 px-2">
+          <div className="flex items-center gap-2 sm:gap-3 px-1 sm:px-2">
             <div className="hidden sm:flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15] animate-pulse" />
               <span className="text-[8px] font-mono text-[#9CA3AF] uppercase font-bold tracking-widest">SYSTEM_ONLINE</span>
             </div>
             <div className="h-4 w-px bg-[#2A2A2A] hidden sm:block" />
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button onClick={reset} className="p-1.5 text-[#9CA3AF] hover:text-white transition-colors bg-[#1A1A1A] rounded-xl border border-[#2A2A2A]">
-                <RotateCcw size={13} />
+                <RotateCcw size={12} className="sm:w-[13px] sm:h-[13px]" />
               </button>
             </div>
           </div>
@@ -283,7 +283,7 @@ export default function App() {
                     <TypeIcon size={14} className="#9CA3AF" />
                   </div>
                   <div>
-                    <span className="text-[12px] font-bold text-white block leading-none">Source_Buffer.txt</span>
+                    <span className="text-[12px] font-bold text-white block leading-none">Entry</span>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">RAW</span>
                       <span className="w-1 h-1 bg-[#2A2A2A] rounded-full" />
@@ -447,7 +447,7 @@ export default function App() {
 
               <div className="p-6 bg-[#1A1A1A]/30">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="tech-label">Context_Modifiers</span>
+                  <span className="tech-label">Prompt Expansion</span>
                 </div>
                 <textarea
                   value={additionalIdea}
@@ -501,7 +501,7 @@ export default function App() {
                     <Wand2 size={14} className="text-black" />
                   </div>
                   <div>
-                    <span className="text-[12px] font-bold text-white block leading-none">Optimized_Result.sd</span>
+                    <span className="text-[12px] font-bold text-white block leading-none">Output</span>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">V2.0</span>
                       <span className="w-1 h-1 bg-[#2A2A2A] rounded-full" />
