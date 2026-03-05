@@ -223,10 +223,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] pt-6 pb-24 sm:py-12 px-4 sm:px-8 font-sans selection:bg-[#FACC15] selection:text-black transition-colors duration-200">
+    <div className="min-h-screen bg-[#0B0B0B] pt-24 pb-12 sm:py-12 px-4 sm:px-8 font-sans selection:bg-[#FACC15] selection:text-black transition-colors duration-200">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* System Header / Navigation Bar - Bottom on Mobile, Top on Desktop */}
-        <div className="flex items-center justify-between gap-2 sm:gap-3 bg-[#141414] p-1.5 sm:p-1.5 rounded-t-2xl sm:rounded-2xl border-t sm:border border-[#2A2A2A] fixed sm:sticky bottom-0 sm:top-4 left-0 right-0 sm:left-auto sm:right-auto z-50 shadow-2xl backdrop-blur-md bg-opacity-90 px-4 sm:px-1.5">
+        {/* System Header / Navigation Bar - Top on Mobile and Desktop */}
+        <div className="flex items-center justify-between gap-2 sm:gap-3 bg-[#141414] p-1.5 sm:p-1.5 rounded-none sm:rounded-2xl border-b sm:border border-[#2A2A2A] fixed sm:sticky top-0 sm:top-4 left-0 right-0 sm:left-auto sm:right-auto z-50 shadow-2xl backdrop-blur-md bg-opacity-90 px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <span className="font-bold tracking-tight text-sm sm:text-base text-white">KIRAMMA</span>
             <div className="h-4 w-px bg-[#2A2A2A] hidden md:block" />
@@ -237,19 +237,19 @@ export default function App() {
           </div>
 
           <div className="flex gap-1 overflow-x-auto scrollbar-hide p-1 bg-[#0B0B0B] rounded-xl border border-[#2A2A2A] mx-auto sm:mx-0">
-            <button onClick={() => setMode('translator')} className={cn("pill-tab py-1.5 px-3 sm:px-2.5", mode === 'translator' && "active")}>
+            <button onClick={() => setMode('translator')} className={cn("pill-tab py-1.5 px-3 sm:px-4", mode === 'translator' && "active")}>
               <Languages size={14} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">TRANSLATOR</span>
             </button>
-            <button onClick={() => setMode('auditor')} className={cn("pill-tab py-1.5 px-3 sm:px-2.5", mode === 'auditor' && "active")}>
+            <button onClick={() => setMode('auditor')} className={cn("pill-tab py-1.5 px-3 sm:px-4", mode === 'auditor' && "active")}>
               <AlertCircle size={14} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">AUDITOR</span>
             </button>
-            <button onClick={() => setMode('troubleshooter')} className={cn("pill-tab py-1.5 px-3 sm:px-2.5", mode === 'troubleshooter' && "active")}>
+            <button onClick={() => setMode('troubleshooter')} className={cn("pill-tab py-1.5 px-3 sm:px-4", mode === 'troubleshooter' && "active")}>
               <MessageSquare size={14} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">CONSULT</span>
             </button>
-            <button onClick={() => setMode('personal')} className={cn("pill-tab py-1.5 px-3 sm:px-2.5", mode === 'personal' && "active")}>
+            <button onClick={() => setMode('personal')} className={cn("pill-tab py-1.5 px-3 sm:px-4", mode === 'personal' && "active")}>
               <LayoutGrid size={14} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">PERSONAL</span>
             </button>
@@ -502,19 +502,6 @@ export default function App() {
                       <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">STABLE_DIFFUSION</span>
                     </div>
                   </div>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setActiveTab('optimized')}
-                    className={cn(
-                      "px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all border",
-                      activeTab === 'optimized' 
-                        ? "bg-white text-black border-white" 
-                        : "text-[#9CA3AF] border-[#2A2A2A] hover:border-[#404040]"
-                    )}
-                  >
-                    OPTIMIZED
-                  </button>
                 </div>
               </div>
 
