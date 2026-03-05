@@ -45,6 +45,9 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'optimized' | 'translated'>('optimized');
   const [personalInputType, setPersonalInputType] = useState<'text' | 'image'>('text');
+  const [auditorInputType, setAuditorInputType] = useState<'text' | 'image'>('text');
+
+  const isImageInput = (mode === 'vision' || (mode === 'personal' && personalInputType === 'image') || (mode === 'auditor' && auditorInputType === 'image'));
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,11 +67,11 @@ export default function App() {
   const handleAnalyze = async () => {
     setIsRealtimeLoading(false);
     
-    if (mode === 'vision' || (mode === 'personal' && personalInputType === 'image')) {
+    if (isImageInput) {
       if (!selectedImage) return;
       setIsAnalyzing(true);
       try {
-        const result = mode === 'vision' 
+        const result = (mode === 'vision' || (mode === 'auditor' && auditorInputType === 'image'))
           ? await generatePromptFromImage(selectedImage.data, selectedImage.mimeType, additionalIdea)
           : await generatePersonalPromptFromImage(selectedImage.data, selectedImage.mimeType, additionalIdea);
         setAnalysis(result);
@@ -125,6 +128,7 @@ export default function App() {
     setStrength(null);
     setRealtimeAssistance(null);
     setPersonalInputType('text');
+    setAuditorInputType('text');
   };
 
   const lastProcessedInput = React.useRef('');
@@ -132,7 +136,7 @@ export default function App() {
   // Real-time assistance debouncing
   useEffect(() => {
     const isInputTooShort = !input.trim() || input.length < 5;
-    const isImageMode = mode === 'vision' || (mode === 'personal' && personalInputType === 'image');
+    const isImageMode = mode === 'vision' || (mode === 'personal' && personalInputType === 'image') || (mode === 'auditor' && auditorInputType === 'image');
     const isDuplicateInput = input === lastProcessedInput.current;
 
     if (isImageMode || isInputTooShort || isDuplicateInput) {
@@ -162,7 +166,7 @@ export default function App() {
   // Handle paste events for images in vision or personal image mode
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      const isImageMode = mode === 'vision' || (mode === 'personal' && personalInputType === 'image');
+      const isImageMode = mode === 'vision' || (mode === 'personal' && personalInputType === 'image') || (mode === 'auditor' && auditorInputType === 'image');
       if (!isImageMode) return;
       
       const items = event.clipboardData?.items;
@@ -219,14 +223,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] pt-20 pb-12 sm:py-12 px-4 sm:px-8 font-sans selection:bg-[#FACC15] selection:text-black transition-colors duration-200">
+    <div className="min-h-screen bg-[#0B0B0B] pt-6 pb-24 sm:py-12 px-4 sm:px-8 font-sans selection:bg-[#FACC15] selection:text-black transition-colors duration-200">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* System Header / Navigation Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 bg-[#141414] p-1 sm:p-1.5 rounded-none sm:rounded-2xl border-b sm:border border-[#2A2A2A] fixed sm:sticky top-0 sm:top-4 left-0 right-0 sm:left-auto sm:right-auto z-50 shadow-2xl backdrop-blur-md bg-opacity-90">
-          <div className="flex items-center gap-2 sm:gap-3 px-1 sm:px-2">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-bold tracking-tight text-sm sm:text-base text-white">KIRAMMA</span>
-            </div>
+        {/* System Header / Navigation Bar - Bottom on Mobile, Top on Desktop */}
+        <div className="flex items-center justify-between gap-2 sm:gap-3 bg-[#141414] p-1.5 sm:p-1.5 rounded-t-2xl sm:rounded-2xl border-t sm:border border-[#2A2A2A] fixed sm:sticky bottom-0 sm:top-4 left-0 right-0 sm:left-auto sm:right-auto z-50 shadow-2xl backdrop-blur-md bg-opacity-90 px-4 sm:px-1.5">
+          <div className="flex items-center gap-3">
+            <span className="font-bold tracking-tight text-sm sm:text-base text-white">KIRAMMA</span>
             <div className="h-4 w-px bg-[#2A2A2A] hidden md:block" />
             <div className="hidden md:flex items-center gap-2">
               <span className="text-[8px] font-mono text-[#9CA3AF] uppercase font-bold tracking-widest">Engine</span>
@@ -234,41 +236,35 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide p-0.5 bg-[#0B0B0B] rounded-xl border border-[#2A2A2A]">
-            <button onClick={() => setMode('translator')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'translator' && "active")}>
-              <Languages size={12} className="sm:w-[13px] sm:h-[13px]" /> 
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide p-1 bg-[#0B0B0B] rounded-xl border border-[#2A2A2A] mx-auto sm:mx-0">
+            <button onClick={() => setMode('translator')} className={cn("pill-tab py-1.5 px-3 sm:px-2.5", mode === 'translator' && "active")}>
+              <Languages size={14} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">TRANSLATOR</span>
             </button>
-            <button onClick={() => setMode('auditor')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'auditor' && "active")}>
-              <AlertCircle size={12} className="sm:w-[13px] sm:h-[13px]" /> 
+            <button onClick={() => setMode('auditor')} className={cn("pill-tab py-1.5 px-3 sm:px-2.5", mode === 'auditor' && "active")}>
+              <AlertCircle size={14} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">AUDITOR</span>
             </button>
-            <button onClick={() => setMode('vision')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'vision' && "active")}>
-              <ImageIcon size={12} className="sm:w-[13px] sm:h-[13px]" /> 
-              <span className="hidden sm:inline text-[10px]">VISION</span>
-            </button>
-            <button onClick={() => setMode('troubleshooter')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'troubleshooter' && "active")}>
-              <MessageSquare size={12} className="sm:w-[13px] sm:h-[13px]" /> 
+            <button onClick={() => setMode('troubleshooter')} className={cn("pill-tab py-1.5 px-3 sm:px-2.5", mode === 'troubleshooter' && "active")}>
+              <MessageSquare size={14} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">CONSULT</span>
             </button>
-            <button onClick={() => setMode('personal')} className={cn("pill-tab py-1 px-2 sm:px-2.5", mode === 'personal' && "active")}>
-              <LayoutGrid size={12} className="sm:w-[13px] sm:h-[13px]" /> 
+            <button onClick={() => setMode('personal')} className={cn("pill-tab py-1.5 px-3 sm:px-2.5", mode === 'personal' && "active")}>
+              <LayoutGrid size={14} className="sm:w-[13px] sm:h-[13px]" /> 
               <span className="hidden sm:inline text-[10px]">PERSONAL</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 px-1 sm:px-2">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden sm:flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15] animate-pulse" />
               <span className="text-[8px] font-mono text-[#9CA3AF] uppercase font-bold tracking-widest">SYSTEM_ONLINE</span>
             </div>
             <div className="h-4 w-px bg-[#2A2A2A] hidden sm:block" />
             
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <button onClick={reset} className="p-1.5 text-[#9CA3AF] hover:text-white transition-colors bg-[#1A1A1A] rounded-xl border border-[#2A2A2A]">
-                <RotateCcw size={12} className="sm:w-[13px] sm:h-[13px]" />
-              </button>
-            </div>
+            <button onClick={reset} className="p-1.5 text-[#9CA3AF] hover:text-white transition-colors bg-[#1A1A1A] rounded-xl border border-[#2A2A2A]">
+              <RotateCcw size={14} className="sm:w-[13px] sm:h-[13px]" />
+            </button>
           </div>
         </div>
 
@@ -285,34 +281,32 @@ export default function App() {
                   <div>
                     <span className="text-[12px] font-bold text-white block leading-none">Entry</span>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">RAW</span>
-                      <span className="w-1 h-1 bg-[#2A2A2A] rounded-full" />
                       <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">{mode}</span>
                     </div>
                   </div>
                 </div>
 
-                {mode === 'personal' && (
+                {(mode === 'personal' || mode === 'auditor') && (
                   <div className="flex bg-[#0B0B0B] p-1 rounded-xl border border-[#2A2A2A]">
                     <button 
-                      onClick={() => setPersonalInputType('text')}
+                      onClick={() => mode === 'personal' ? setPersonalInputType('text') : setAuditorInputType('text')}
                       className={cn(
-                        "px-3 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2",
-                        personalInputType === 'text' ? "bg-[#FACC15] text-black" : "text-[#9CA3AF] hover:text-white"
+                        "px-2 sm:px-3 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2",
+                        (mode === 'personal' ? personalInputType === 'text' : auditorInputType === 'text') ? "bg-[#FACC15] text-black" : "text-[#9CA3AF] hover:text-white"
                       )}
                     >
                       <TypeIcon size={12} />
-                      TEXT
+                      <span className="hidden sm:inline">TEXT</span>
                     </button>
                     <button 
-                      onClick={() => setPersonalInputType('image')}
+                      onClick={() => mode === 'personal' ? setPersonalInputType('image') : setAuditorInputType('image')}
                       className={cn(
-                        "px-3 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2",
-                        personalInputType === 'image' ? "bg-[#FACC15] text-black" : "text-[#9CA3AF] hover:text-white"
+                        "px-2 sm:px-3 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2",
+                        (mode === 'personal' ? personalInputType === 'image' : auditorInputType === 'image') ? "bg-[#FACC15] text-black" : "text-[#9CA3AF] hover:text-white"
                       )}
                     >
                       <ImageIcon size={12} />
-                      IMAGE
+                      <span className="hidden sm:inline">IMAGE</span>
                     </button>
                   </div>
                 )}
@@ -322,7 +316,7 @@ export default function App() {
                 )}
               </div>
 
-              {mode === 'vision' || (mode === 'personal' && personalInputType === 'image') ? (
+              {mode === 'vision' || (mode === 'personal' && personalInputType === 'image') || (mode === 'auditor' && auditorInputType === 'image') ? (
                 <div className="p-6 bg-[#0B0B0B]/30">
                   <div className={cn(
                     "h-[320px] border border-[#2A2A2A] rounded-2xl flex flex-col items-center justify-center transition-all relative group overflow-hidden bg-[#141414]",
@@ -460,15 +454,15 @@ export default function App() {
               <div className="p-6 bg-[#141414] border-t border-[#2A2A2A] flex justify-end">
                 <button
                   onClick={handleAnalyze}
-                  disabled={isAnalyzing || ((mode === 'vision' || (mode === 'personal' && personalInputType === 'image')) ? !selectedImage : !input.trim())}
-                  className="btn-tech w-full sm:w-auto min-w-[180px]"
+                  disabled={isAnalyzing || (isImageInput ? !selectedImage : !input.trim())}
+                  className="btn-tech w-full sm:w-auto min-w-0 sm:min-w-[180px] p-3 sm:px-6 sm:py-2.5"
                 >
                   {isAnalyzing ? (
                     <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                   ) : (
                     <>
                       <Wand2 size={16} />
-                      Execute Analysis
+                      <span className="hidden sm:inline">Execute Analysis</span>
                     </>
                   )}
                 </button>
@@ -521,17 +515,6 @@ export default function App() {
                   >
                     OPTIMIZED
                   </button>
-                  <button
-                    onClick={() => setActiveTab('translated')}
-                    className={cn(
-                      "px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all border",
-                      activeTab === 'translated' 
-                        ? "bg-white text-black border-white" 
-                        : "text-[#9CA3AF] border-[#2A2A2A] hover:border-[#404040]"
-                    )}
-                  >
-                    RAW
-                  </button>
                 </div>
               </div>
 
@@ -544,7 +527,7 @@ export default function App() {
                         <span className="text-[11px] font-bold text-[#9CA3AF] uppercase tracking-widest">AI Summary</span>
                       </div>
                       <p className="whitespace-pre-wrap text-white">
-                        {activeTab === 'optimized' ? analysis.optimizedPrompt : analysis.translatedPrompt}
+                        {analysis.optimizedPrompt}
                       </p>
                     </div>
                     
@@ -580,7 +563,7 @@ export default function App() {
 
                 {analysis && (
                   <button
-                    onClick={() => copyToClipboard(activeTab === 'optimized' ? analysis.optimizedPrompt : analysis.translatedPrompt)}
+                    onClick={() => copyToClipboard(analysis.optimizedPrompt)}
                     className="absolute top-6 right-6 p-2.5 bg-[#1A1A1A]/90 backdrop-blur border border-[#2A2A2A] rounded-xl text-[#9CA3AF] hover:text-white transition-all"
                   >
                     {copied ? <Check size={18} className="text-[#FACC15]" /> : <Copy size={18} />}
