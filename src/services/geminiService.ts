@@ -25,7 +25,7 @@ export type AnalysisMode = 'translator' | 'auditor' | 'vision' | 'troubleshooter
 
 export async function generatePromptFromImage(base64Image: string, mimeType: string, additionalIdea?: string): Promise<PromptAnalysis> {
   const response = await ai.models.generateContent({
-    model: "gemini-flash-latest",
+    model: "gemini-3-flash-preview",
     contents: [
       {
         inlineData: {
@@ -113,7 +113,7 @@ Final output must be in JSON format exactly as specified in the schema.`
 
 export async function generatePersonalPromptFromImage(base64Image: string, mimeType: string, additionalIdea?: string): Promise<PromptAnalysis> {
   const response = await ai.models.generateContent({
-    model: "gemini-flash-latest",
+    model: "gemini-3-flash-preview",
     contents: [
       {
         inlineData: {
@@ -215,40 +215,57 @@ export interface RealtimeAssistance {
 export async function getRealtimeAssistance(input: string): Promise<RealtimeAssistance> {
   if (!input || input.length < 5) return { recommendations: [], warnings: [], typos: [], correctedInput: '' };
 
-  const response = await ai.models.generateContent({
-    model: "gemini-flash-latest",
-    contents: `As a Stable Diffusion prompt assistant, analyze this partial input: "${input}"
-    
-    1. Provide 3-4 relevant next-word or contextual completions (e.g., "standing on the" -> "beach", "rooftop").
-    2. Identify immediate redundancies or conflicting tags.
-    3. Fix typos/grammar and provide a full "correctedInput" which is the user's input but with grammar and typos fixed. Keep it as close to the original intent as possible.
-    
-    Return JSON: { "recommendations": [], "warnings": [], "typos": [{ "original": "", "correction": "" }], "correctedInput": "" }`,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          recommendations: { type: Type.ARRAY, items: { type: Type.STRING } },
-          warnings: { type: Type.ARRAY, items: { type: Type.STRING } },
-          typos: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                original: { type: Type.STRING },
-                correction: { type: Type.STRING }
-              }
-            }
-          },
-          correctedInput: { type: Type.STRING }
-        },
-        required: ["recommendations", "warnings", "typos", "correctedInput"]
-      }
-    }
-  });
+  let attempts = 0;
+  const maxAttempts = 2;
 
-  return JSON.parse(response.text || "{}");
+  while (attempts < maxAttempts) {
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: `As a Stable Diffusion prompt assistant, analyze this partial input: "${input}"
+        
+        1. Provide 3-4 relevant next-word or contextual completions (e.g., "standing on the" -> "beach", "rooftop").
+        2. Identify immediate redundancies or conflicting tags.
+        3. Fix typos/grammar and provide a full "correctedInput" which is the user's input but with grammar and typos fixed. Keep it as close to the original intent as possible.
+        
+        Return JSON: { "recommendations": [], "warnings": [], "typos": [{ "original": "", "correction": "" }], "correctedInput": "" }`,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              recommendations: { type: Type.ARRAY, items: { type: Type.STRING } },
+              warnings: { type: Type.ARRAY, items: { type: Type.STRING } },
+              typos: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    original: { type: Type.STRING },
+                    correction: { type: Type.STRING }
+                  }
+                }
+              },
+              correctedInput: { type: Type.STRING }
+            },
+            required: ["recommendations", "warnings", "typos", "correctedInput"]
+          }
+        }
+      });
+
+      return JSON.parse(response.text || "{}");
+    } catch (error) {
+      attempts++;
+      if (attempts >= maxAttempts) {
+        console.error("Realtime assistance failed after retries:", error);
+        return { recommendations: [], warnings: [], typos: [], correctedInput: input };
+      }
+      // Wait a bit before retrying
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+  
+  return { recommendations: [], warnings: [], typos: [], correctedInput: input };
 }
 
 export async function analyzeAndOptimizePrompt(input: string, mode: AnalysisMode = 'translator', additionalIdea?: string): Promise<PromptAnalysis> {
@@ -370,7 +387,7 @@ export async function analyzeAndOptimizePrompt(input: string, mode: AnalysisMode
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-flash-latest",
+    model: "gemini-3-flash-preview",
     contents: systemPrompt,
     config: {
       responseMimeType: "application/json",
