@@ -364,7 +364,12 @@ export default function App() {
                     {/* Real-time Assistance Section (Moved from absolute overlay to prevent overlapping) */}
                     <div className="p-4 bg-[#0B0B0B]/40 border-b border-[#2A2A2A] min-h-[60px] flex flex-col justify-center">
                       <AnimatePresence mode="wait">
-                        {realtimeAssistance ? (
+                        {isRealtimeLoading ? (
+                          <div className="flex items-center justify-center h-full gap-3">
+                            <div className="w-3 h-3 border-2 border-[#2A2A2A] border-t-[#FACC15] rounded-full animate-spin" />
+                            <span className="text-[10px] font-mono text-[#404040] uppercase tracking-widest animate-pulse">Analyzing_Input...</span>
+                          </div>
+                        ) : realtimeAssistance ? (
                           <motion.div 
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
